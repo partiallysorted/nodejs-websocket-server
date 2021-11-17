@@ -1,4 +1,4 @@
-# nodejs-websocket-server
+# websocket-server
 
 Create package.json.
 
