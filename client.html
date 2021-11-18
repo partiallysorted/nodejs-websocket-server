@@ -3,41 +3,84 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>nodejs-websocket-server Client</title>
+    <title>websocket-server Client</title>
+    <style>
+html, body {
+    background-color: black;
+    color: white;
+    font-family:'Open Sans', 'Lucida Grande', Arial, Helvetica, sans-serif;
+}
+    </style>
 </head>
 <body>
 
     <h1>WebSocket Client</h1>
-    <p><button onClick="connectToServer()">Connect to Server</button></p>
-    <p><button onClick="sendMessage()">Send Message</button></p>
-    <p><button onClick="closeConnection()">Close Connection</button></p>
+    <p>
+        <button id='btnConnect' onClick="connect()">Connect</button>
+        <button id='btnDisconnect' onClick="disconnect()">Disconnect</button>
+    </p>
+
+    <br>
+    <p>
+        <div id="eventLog" width="640px" height="480px"></div>
+    </p>
 
 <script>
+var pingCallback;
 var ws;
 
-const connectToServer = () => {
+document.getElementById('btnDisconnect').disabled = true;
+
+function log(text) {
+    var eventLog = document.getElementById("eventLog");
+    eventLog.innerHTML += text + "<br>";
+}
+
+function ping() {
+    ws.send(JSON.stringify({ op: "ping", timestamp: Date.now() }));
+    log("Ping.");
+}
+
+const connect = () => {
+    var eventLog = document.getElementById("eventLog");
+    eventLog.innerHTML = "";
+
     ws = new WebSocket("ws://localhost:8080/ws");
 
-    ws.onopen = () => {
-        console.log(`Connection to ${url} has been established`);
-    };
-
-    ws.onmessage = (msg) => {
-        console.log(msg.data);
+    ws.onclose = () => {
+        document.getElementById('btnDisconnect').disabled = true;
+        document.getElementById('btnConnect').disabled = false;
+        clearInterval(pingCallback);
+        log('Connection closed.');
     };
 
     ws.onerror = (err) => {
-        console.log(`WebSocket error: ${err}`);
+        log(`ERROR: ${err}`);
+    };
+
+    ws.onmessage = (evt) => {
+        log(`MESSAGE: ${evt.data}`);
+
+        var msg = JSON.parse(evt.data);
+        var op = msg.op;
+        var timestamp = new Date(msg.date).toLocaleTimeString();
+
+        log(`op: ${op}`);
+        log(`timestamp: ${timestamp}`);
+    };
+
+    ws.onopen = () => {
+        document.getElementById('btnConnect').disabled = true;
+        document.getElementById('btnDisconnect').disabled = false;
+        pingCallback = setInterval(ping, 3000);
+        log('Connection opened.');
     };
 }
 
-const sendMessage = () => {
-    ws.send('Hows it going amigo!');
-}
-
-const closeConnection = () => {
+const disconnect = () => {
     ws.close();
 }
+
 </script>
 
 </body>
