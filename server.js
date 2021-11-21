@@ -50,7 +50,7 @@ app.ws('/ws', function(ws, req) {
         console.log("MESSAGE:", msg);
         msg = JSON.parse(msg);
         if (msg.op == 'ping') {
-            ws.send(JSON.stringify({ op: "pong", timestamp: new Date() }));
+            ws.send(JSON.stringify({ op: "pong", timestamp: new Date().getTime() }));
         }
     });
 });
