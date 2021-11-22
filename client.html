@@ -37,7 +37,7 @@ function log(text) {
 }
 
 function ping() {
-    ws.send(JSON.stringify({ op: "ping", timestamp: Date.now() }));
+    ws.ping(JSON.stringify({ op: "ping", timestamp: Date.now() }));
     log("Ping.");
 }
 

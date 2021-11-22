@@ -3,7 +3,7 @@ const WebSocket = require('ws');
 var pingCallback;
 
 function ping() {
-    ws.send(JSON.stringify({ op: "ping", timestamp: Date.now() }));
+    ws.ping(JSON.stringify({ op: "ping", timestamp: Date.now() }));
     console.log("ping.");
 }
 
