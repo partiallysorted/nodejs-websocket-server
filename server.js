@@ -49,9 +49,13 @@ app.ws('/ws', function(ws, req) {
     ws.on('message', function(msg) {
         console.log("MESSAGE:", msg);
         msg = JSON.parse(msg);
-        if (msg.op == 'ping') {
-            ws.pong(JSON.stringify({ op: "pong", timestamp: new Date().getTime() }));
-        }
+    });
+    ws.on('ping', (msg) => {
+        console.log("PING:", msg);
+        ws.pong(JSON.stringify({ op: "pong", timestamp: new Date().getTime() }));
+    });
+    ws.on('pong', (msg) => {
+        console.log("PONG:", msg);
     });
 });
 
